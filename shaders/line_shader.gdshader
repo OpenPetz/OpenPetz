@@ -12,7 +12,7 @@ uniform vec3 r_outline_color;
 uniform vec3 l_outline_color;
 uniform float fuzz = 0.0;
 uniform vec2 vec_to_upright;
-global uniform sampler2D palette: filter_nearest;
+uniform sampler2D palette: filter_nearest;
 
 vec4 get_shifted_color(float palette_index) {
 	float modded_color = color_index - mod(color_index, 10);

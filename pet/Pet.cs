@@ -26,15 +26,18 @@ public partial class Pet : Node2D
 		Texture2D texture = GD.Load<Texture2D>("res://pet/data/textures/hair6.bmp");
 		Texture2D palette = GD.Load<Texture2D>("res://pet/data/textures/petzpalette.png");
 
-		Ball ball = new Ball(texture, palette, 50, 105, 3, 5, 5);
+		Ball ball = new Ball(texture, palette, 10, 105, 3, 1, 5);
 		AddChild(ball);
 
-		ball.GlobalPosition = new Vector2(100, 100);
+		ball.GlobalPosition = new Vector2(0, 0);
 
-		Ball ball2 = new Ball(texture, palette, 50, 105, 3, 5, 5);
+		Ball ball2 = new Ball(texture, palette, 25, 105, 3, 1, 5);
 		AddChild(ball2);
 
-		ball2.GlobalPosition = new Vector2(200, 200);
+		ball2.GlobalPosition = new Vector2(20, 20);
+
+		Line line = new Line(); 
+		AddChild(line);
 	}
 
 	public override void _ExitTree()

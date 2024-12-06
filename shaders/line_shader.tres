@@ -1,10 +1,16 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://kef7j6rxiiyu"]
 
 [ext_resource type="Shader" path="res://shaders/line_shader.gdshader" id="1_20pov"]
 
 [resource]
 shader = ExtResource("1_20pov")
-shader_parameter/max_uvs = null
+shader_parameter/max_uvs = Vector2(15, 1)
 shader_parameter/center = null
 shader_parameter/outline1_enabled = 1.0
 shader_parameter/outline2_enabled = 1.0
+shader_parameter/color_index = null
+shader_parameter/transparent_color_index = null
+shader_parameter/r_outline_color = null
+shader_parameter/l_outline_color = null
+shader_parameter/fuzz = 0.0
+shader_parameter/vec_to_upright = null

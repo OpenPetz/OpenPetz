@@ -110,7 +110,6 @@ public partial class Ball : Node2D
 
 		immediateMesh.SurfaceSetUV(new Vector2(128, 128));
 		immediateMesh.SurfaceAddVertex(new Vector3(size, size, 0));
-
 	}
 
 
