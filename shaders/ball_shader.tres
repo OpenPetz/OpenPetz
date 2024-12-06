@@ -6,7 +6,7 @@
 
 [resource]
 shader = ExtResource("1_kflw4")
-shader_parameter/center = Vector2(100, 100)
+shader_parameter/center = Vector2(1, 100)
 shader_parameter/radius = 50.0
 shader_parameter/outline_width = 2.0
 shader_parameter/fuzz = 1.0

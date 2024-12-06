@@ -29,14 +29,16 @@ public partial class Pet : Node2D
 		Ball ball = new Ball(texture, palette, 10, 105, 3, 1, 5);
 		AddChild(ball);
 
-		ball.GlobalPosition = new Vector2(0, 0);
+		ball.Position = new Vector2(0, 0);
 
 		Ball ball2 = new Ball(texture, palette, 25, 105, 3, 1, 5);
 		AddChild(ball2);
 
-		ball2.GlobalPosition = new Vector2(20, 20);
+		ball2.Position = new Vector2(200, 150);
 
-		Line line = new Line(); 
+		Line line = new Line();
+		line.start = ball2;
+		line.end = ball;
 		AddChild(line);
 	}
 

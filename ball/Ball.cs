@@ -11,9 +11,18 @@ public partial class Ball : Node2D
 	public ImmediateMesh immediateMesh;
 	public ShaderMaterial material;
 
-	public QuadMesh quadMesh;
+	private bool _queueRedraw = true;
 
-	public Texture2D texture;
+	private Texture2D _texture;
+	//public Texture2D Texture {  
+	//	get => _texture;
+	//	set
+	//	{
+ //           material.SetShaderParameter("tex", value);
+ //           _texture = value;
+	//		_queueRedraw = true;
+	//	}
+	//}
 	public Texture2D palette;
 
 	public int radius;
@@ -29,7 +38,7 @@ public partial class Ball : Node2D
 
 	public Ball(Texture2D texture, Texture2D palette, int radius, int color_index, int fuzz, int outline_width, int outline_color)
 	{
-		this.texture = texture;
+		_texture = texture;
 		this.palette = palette;
 		this.radius = radius;
 		this.color_index = color_index;
@@ -40,7 +49,7 @@ public partial class Ball : Node2D
 
 	public Ball(Texture2D texture, int radius, int color_index, int fuzz, int outline_width, int outline_color)
 	{
-		this.texture = texture;
+		_texture = texture;
 		this.palette = GD.Load<Texture2D>("res://pet/data/textures/petzpalette.png");
 		this.radius = radius;
 		this.color_index = color_index;
@@ -57,29 +66,42 @@ public partial class Ball : Node2D
 		immediateMesh = new ImmediateMesh();
 		meshInstance.Mesh = immediateMesh;
 
-		// need to copy material for each ball or else they overwrite eachother's parameters.
-		// this is really inefficent and we'll need to change this at some point but that means rewriting the shader so ¯\_(ツ)_/¯ 
-		material = (ShaderMaterial)GD.Load<ShaderMaterial>("res://shaders/ball_shader.tres").Duplicate(true);
+        // need to copy material for each ball or else they overwrite eachother's parameters.
+        // this is really inefficent and we'll need to change this at some point but that means rewriting the shader so ¯\_(ツ)_/¯ 
+        material = (ShaderMaterial)GD.Load<ShaderMaterial>("res://shaders/ball_shader.tres").Duplicate(true);
 
-		material.SetShaderParameter("fuzz", fuzz);
+        //material = (ShaderMaterial)GD.Load<ShaderMaterial>("res://shaders/ball_shader.tres");
+
+
+
+        material.SetShaderParameter("fuzz", fuzz);
 		material.SetShaderParameter("radius", radius);
 		material.SetShaderParameter("outline_width", outline_width);
 
 		material.SetShaderParameter("color_index", color_index);
 		material.SetShaderParameter("outline_color", outline_color);
 
-		material.SetShaderParameter("tex", texture);
+		material.SetShaderParameter("tex", _texture);
 		material.SetShaderParameter("palette", palette);
 
 		material.SetShaderParameter("center", this.GlobalPosition);
 	}
 
+    public override void _Process(double delta)
+    {
+		if (_queueRedraw)
+		{
+            QueueRedraw();
+			//_queueRedraw = false;
+        }
+    }
 
-	public override void _Process(double dt)
+
+    public override void _Draw()
 	{
-		material.SetShaderParameter("center", this.GlobalPosition);
+        material.SetShaderParameter("center", this.GlobalPosition);
 
-		immediateMesh.ClearSurfaces();
+        immediateMesh.ClearSurfaces();
 		immediateMesh.SurfaceBegin(Mesh.PrimitiveType.Triangles);
 
 		drawQuad(radius + fuzz);
@@ -92,24 +114,30 @@ public partial class Ball : Node2D
 
 	private void drawQuad(int size)
 	{
-		immediateMesh.SurfaceSetUV(new Vector2(0, 1));
-		immediateMesh.SurfaceAddVertex(new Vector3(-1 * size, -1 * size, 0));
+		Vector3 bottomLeft = new Vector3(-1 * size, -1 * size, 0);
+		Vector3 topLeft = new Vector3(-1 * size, size, 0);
+		Vector3 topRight = new Vector3(size, size, 0);
+		Vector3 bottomRight = new Vector3(size, -1 * size, 0);
+
+
+        immediateMesh.SurfaceSetUV(new Vector2(0, 1));
+		immediateMesh.SurfaceAddVertex(bottomLeft);
 
 		immediateMesh.SurfaceSetUV(new Vector2(0, 0));
-		immediateMesh.SurfaceAddVertex(new Vector3(-1 * size, size, 0));
+		immediateMesh.SurfaceAddVertex(topLeft);
 
 		immediateMesh.SurfaceSetUV(new Vector2(1, 1));
-		immediateMesh.SurfaceAddVertex(new Vector3(size, size, 0));
+		immediateMesh.SurfaceAddVertex(topRight);
 
 
 		immediateMesh.SurfaceSetUV(new Vector2(0, 128));
-		immediateMesh.SurfaceAddVertex(new Vector3(size, -1 * size, 0));
+		immediateMesh.SurfaceAddVertex(bottomRight);
 
 		immediateMesh.SurfaceSetUV(new Vector2(0, 0));
-		immediateMesh.SurfaceAddVertex(new Vector3(-1 * size, -1 * size, 0));
+		immediateMesh.SurfaceAddVertex(bottomLeft);
 
 		immediateMesh.SurfaceSetUV(new Vector2(128, 128));
-		immediateMesh.SurfaceAddVertex(new Vector3(size, size, 0));
+		immediateMesh.SurfaceAddVertex(topRight);
 	}
 
 
