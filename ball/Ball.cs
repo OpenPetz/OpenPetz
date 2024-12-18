@@ -5,169 +5,100 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public partial class Ball : Node2D
+public partial class Ball : MeshInstance2D
 {
-	private MeshInstance2D meshInstance;
-	public ImmediateMesh immediateMesh;
-	public ShaderMaterial material;
+    private ImmediateMesh immediateMesh;
+    //To do: Merge this with this.Material
+    private ShaderMaterial material;
 
-	private bool _queueRedraw = true;
+    public Texture2D texture;
+    public Texture2D palette;
 
-	private Texture2D _texture;
-	//public Texture2D Texture {  
-	//	get => _texture;
-	//	set
-	//	{
- //           material.SetShaderParameter("tex", value);
- //           _texture = value;
-	//		_queueRedraw = true;
-	//	}
-	//}
-	public Texture2D palette;
+    public int radius;
+    public int color_index;
+    public int fuzz;
+    public int outline_width;
+    public int outline_color;
 
-	public int radius;
-	public int color_index;
-	public int fuzz;
-	public int outline_width;
-	public int outline_color;
+    public Ball()
+    {
 
-	public Ball()
-	{
-		//immediateMesh = new ImmediateMesh();
-	}
+    }
 
-	public Ball(Texture2D texture, Texture2D palette, int radius, int color_index, int fuzz, int outline_width, int outline_color)
-	{
-		_texture = texture;
-		this.palette = palette;
-		this.radius = radius;
-		this.color_index = color_index;
-		this.fuzz = fuzz;
-		this.outline_width = outline_width;
-		this.outline_color = outline_color;
+    public Ball(Texture2D texture, Texture2D palette, int radius, int color_index, int fuzz, int outline_width, int outline_color)
+    {
+        this.texture = texture;
+        this.palette = palette;
+        this.radius = radius;
+        this.color_index = color_index;
+        this.fuzz = fuzz;
+        this.outline_width = outline_width;
+        this.outline_color = outline_color;
+    }
 
-		//immediateMesh = new ImmediateMesh();
-	}
+    public override void _Ready()
+    {
 
-	public Ball(Texture2D texture, int radius, int color_index, int fuzz, int outline_width, int outline_color)
-	{
-		_texture = texture;
-		this.palette = GD.Load<Texture2D>("res://pet/data/textures/petzpalette.png");
-		this.radius = radius;
-		this.color_index = color_index;
-		this.fuzz = fuzz;
-		this.outline_width = outline_width;
-		this.outline_color = outline_color;
+        this.immediateMesh = new ImmediateMesh();
+        this.material = (ShaderMaterial)GD.Load<ShaderMaterial>("res://shaders/ball_shader.tres").Duplicate(true);
 
-		//immediateMesh = new ImmediateMesh();
-	}
+        this.immediateMesh.SurfaceSetMaterial(0, material); //is it necessary?
 
-	public override void _Ready()
-	{
-		//meshInstance = new MeshInstance2D();
-		//AddChild(meshInstance);
+        this.Mesh = this.immediateMesh;
+        this.Material = this.material;
 
-		//immediateMesh = new ImmediateMesh();
-		//meshInstance.Mesh = immediateMesh;
+        //Set Material uniform parameters
 
-		// need to copy material for each ball or else they overwrite eachother's parameters.
-		// this is really inefficent and we'll need to change this at some point but that means rewriting the shader so ¯\_(ツ)_/¯ 
-		//material = (ShaderMaterial)GD.Load<ShaderMaterial>("res://shaders/ball_shader.tres").Duplicate(true);
+        this.material.SetShaderParameter("fuzz", fuzz);
+        this.material.SetShaderParameter("radius", radius);
+        this.material.SetShaderParameter("outline_width", outline_width);
 
-		//material = (ShaderMaterial)GD.Load<ShaderMaterial>("res://shaders/ball_shader.tres");
+        this.material.SetShaderParameter("color_index", color_index);
+        this.material.SetShaderParameter("outline_color", outline_color);
+
+        this.material.SetShaderParameter("tex", texture);
+        this.material.SetShaderParameter("palette", palette);
+
+        this.material.SetShaderParameter("center", this.GlobalPosition);
+    }
 
 
+    public override void _Process(double dt)
+    {
+        material.SetShaderParameter("center", this.GlobalPosition);
 
-		//material.SetShaderParameter("fuzz", fuzz);
-		//material.SetShaderParameter("radius", radius);
-		//material.SetShaderParameter("outline_width", outline_width);
+        immediateMesh.ClearSurfaces();
+        immediateMesh.SurfaceBegin(Mesh.PrimitiveType.Triangles);
 
-		//material.SetShaderParameter("color_index", color_index);
-		//material.SetShaderParameter("outline_color", outline_color);
+        //To do: find out whether this belongs in _Ready or _Process
+        drawQuad(radius + fuzz);
 
-		//material.SetShaderParameter("tex", _texture);
-		//material.SetShaderParameter("palette", palette);
+        immediateMesh.SurfaceEnd();
 
-		//material.SetShaderParameter("center", this.GlobalPosition);
-	}
+    }
 
-	public ImmediateMesh setupMesh(ImmediateMesh mesh, ShaderMaterial material)
-	{
-		material.SetShaderParameter("fuzz", fuzz);
-		material.SetShaderParameter("radius", radius);
-		material.SetShaderParameter("outline_width", outline_width);
+    private void drawQuad(int size)
+    {
+        immediateMesh.SurfaceSetUV(new Vector2(0, 1));
+        immediateMesh.SurfaceAddVertex(new Vector3(-1 * size, -1 * size, 0));
 
-		material.SetShaderParameter("color_index", color_index);
-		material.SetShaderParameter("outline_color", outline_color);
+        immediateMesh.SurfaceSetUV(new Vector2(0, 0));
+        immediateMesh.SurfaceAddVertex(new Vector3(-1 * size, size, 0));
 
-		material.SetShaderParameter("tex", _texture);
-		material.SetShaderParameter("palette", palette);
-
-		material.SetShaderParameter("center", this.GlobalPosition);
-
-		mesh.ClearSurfaces();
-		mesh.SurfaceBegin(Mesh.PrimitiveType.Triangles);
-
-		drawQuad(radius + fuzz, mesh);
-
-		mesh.SurfaceEnd();
-		mesh.SurfaceSetMaterial(0, material);
-
-		return mesh;
-	}
-
-	public override void _Process(double delta)
-	{
-		//if (_queueRedraw)
-		//{
-  //          QueueRedraw();
-		//	//_queueRedraw = false;
-  //      }
-	}
+        immediateMesh.SurfaceSetUV(new Vector2(1, 1));
+        immediateMesh.SurfaceAddVertex(new Vector3(size, size, 0));
 
 
- //   public override void _Draw()
-	//{
- //       material.SetShaderParameter("center", this.GlobalPosition);
+        immediateMesh.SurfaceSetUV(new Vector2(0, 128));
+        immediateMesh.SurfaceAddVertex(new Vector3(size, -1 * size, 0));
 
- //       immediateMesh.ClearSurfaces();
-	//	immediateMesh.SurfaceBegin(Mesh.PrimitiveType.Triangles);
+        immediateMesh.SurfaceSetUV(new Vector2(0, 0));
+        immediateMesh.SurfaceAddVertex(new Vector3(-1 * size, -1 * size, 0));
 
-	//	drawQuad(radius + fuzz);
+        immediateMesh.SurfaceSetUV(new Vector2(128, 128));
+        immediateMesh.SurfaceAddVertex(new Vector3(size, size, 0));
 
-	//	immediateMesh.SurfaceEnd();
-
-	//	immediateMesh.SurfaceSetMaterial(0, material);
-	//	meshInstance.Material = material;
-	//}
-
-	private void drawQuad(int size, ImmediateMesh mesh)
-	{
-		Vector3 bottomLeft = new Vector3(-1 * size, -1 * size, 0);
-		Vector3 topLeft = new Vector3(-1 * size, size, 0);
-		Vector3 topRight = new Vector3(size, size, 0);
-		Vector3 bottomRight = new Vector3(size, -1 * size, 0);
-
-
-		mesh.SurfaceSetUV(new Vector2(0, 1));
-		mesh.SurfaceAddVertex(bottomLeft);
-
-		mesh.SurfaceSetUV(new Vector2(0, 0));
-		mesh.SurfaceAddVertex(topLeft);
-
-		mesh.SurfaceSetUV(new Vector2(1, 1));
-		mesh.SurfaceAddVertex(topRight);
-
-
-		mesh.SurfaceSetUV(new Vector2(0, 1));
-		mesh.SurfaceAddVertex(bottomRight);
-
-		mesh.SurfaceSetUV(new Vector2(0, 0));
-		mesh.SurfaceAddVertex(bottomLeft);
-
-		mesh.SurfaceSetUV(new Vector2(1, 1));
-		mesh.SurfaceAddVertex(topRight);
-	}
+    }
 
 
 }
