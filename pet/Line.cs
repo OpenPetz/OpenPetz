@@ -76,7 +76,7 @@ public partial class Line : Node2D
 
 
 
-        material.SetShaderParameter("tex", texture);
+		material.SetShaderParameter("tex", texture);
 		material.SetShaderParameter("palette", palette);
 
 		material.SetShaderParameter("fuzz", 0);
@@ -91,7 +91,7 @@ public partial class Line : Node2D
 
 		material.SetShaderParameter("center", Position);
 		material.SetShaderParameter("vec_to_upright", Vector2.FromAngle(this.Rotation));
-    }
+	}
 
 
 	public override void _Process(double delta)

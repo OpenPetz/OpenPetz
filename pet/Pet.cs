@@ -6,15 +6,13 @@ using static System.Net.Mime.MediaTypeNames;
 
 public partial class Pet : Node2D
 {
+    Texture2D texture = GD.Load<Texture2D>("res://pet/data/textures/hair6.bmp");
+    Texture2D palette = GD.Load<Texture2D>("res://pet/data/textures/petzpalette.png");
 
-	//public Stack<Kaitai.Scp.Action> actionStack = new Stack<Kaitai.Scp.Action>();
-	//public Kaitai.Scp.Action lastScpAction;
-	//public uint currentScpState; 
+    ShaderMaterial material = (ShaderMaterial)GD.Load<ShaderMaterial>("res://shaders/ball_shader.tres");
 
-	// Called when the node enters the scene tree for the first time.
 
-	//test
-	public override void _Ready()
+    public override void _Ready()
 	{
 		World.pets.Add(this);
 
@@ -23,23 +21,26 @@ public partial class Pet : Node2D
 
 		//Texture2D tex = bitmap.GetData();
 
-		Texture2D texture = GD.Load<Texture2D>("res://pet/data/textures/hair6.bmp");
-		Texture2D palette = GD.Load<Texture2D>("res://pet/data/textures/petzpalette.png");
 
-		Ball ball = new Ball(texture, palette, 10, 105, 3, 1, 5);
-		AddChild(ball);
 
-		ball.Position = new Vector2(0, 0);
+     
+		//AddChild(ball);
 
-		Ball ball2 = new Ball(texture, palette, 25, 105, 3, 1, 5);
-		AddChild(ball2);
+	
 
-		ball2.Position = new Vector2(200, 150);
+		
 
-		Line line = new Line();
-		line.start = ball2;
-		line.end = ball;
-		AddChild(line);
+		//Ball ball2 = new Ball(texture, palette, 25, 105, 3, 1, 5);
+		//AddChild(ball2);
+
+		//ball2.Position = new Vector2(200, 150);
+
+    
+
+        //Line line = new Line();
+		//line.start = ball2;
+		//line.end = ball;
+		//AddChild(line);
 	}
 
 	public override void _ExitTree()
@@ -50,7 +51,23 @@ public partial class Pet : Node2D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-
+		QueueRedraw();
 	}
+
+    public override void _Draw()
+    {
+		
+        Ball ball = new Ball(texture, palette, 10, 105, 3, 1, 5);
+        ball.Position = new Vector2(0, 0);
+		ImmediateMesh mesh1 = new ImmediateMesh();
+        this.DrawMesh(ball.setupMesh(mesh1, material), texture);
+
+		Material mat = mesh1.SurfaceGetMaterial(0);
+
+
+        Ball ball2 = new Ball(texture, palette, 25, 105, 3, 1, 5);
+        ball2.Position = new Vector2(200, 150);
+	    this.DrawMesh(ball2.setupMesh(new ImmediateMesh(), material), texture);
+    }
 
 }
