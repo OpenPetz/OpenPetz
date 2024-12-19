@@ -17,52 +17,20 @@ vec4 get_shifted_color(float palette_index) {
 	return new_color;
 }
 
-float random(float x) {
-    return fract(sin(dot(vec2(x,x),
+float random (vec2 st) {
+    return fract(sin(dot(st.xy,
                          vec2(12.9898,78.233)))*
-        43758.5453123) - 0.5;
+        43758.5453) - 0.5;
 }
-
-float bucket(float y) {
-	return trunc(y / 2.0);
-}
-
-//void fragment() {
-    //vec2 frag = FRAGCOORD.xy;
-    //vec2 texFrag = FRAGCOORD.xy;
-    //
-    //frag.x += ((random(bucket(frag.y - center.y + radius))) - 0.5) * fuzz;
-    //
-    //float len = length(frag - center);
-    //float inside = step(len, radius);
-    //float outline = 0.0;
-    //
-    //if (outline_width > 2.0)
-        //outline = (1.0 - step(len, radius - (outline_width - 1.0)));
-    //else if (outline_width == -2.0) {
-        //len = length((frag - vec2(1.0, 0.0)) - center);
-        //outline = (1.0 - step(len, radius));
-    //} else if (outline_width == 0.0) {
-        //len = length((frag + vec2(1.0, 0.0)) - center);
-        //outline = (1.0 - step(len, radius));
-    //}
-    //else if (outline_width == 1.0) {
-        //len = length((frag + vec2(1.0, 0.0)) - center);
-        //outline = (1.0 - step(len, radius));
-        //len = length((frag - vec2(1.0, 0.0)) - center);
-        //outline = outline + (1.0 - step(len, radius));
-    //}
-    //
-    //vec2 uv = ((texFrag - center) / vec2(textureSize(tex, 0)));
-    //float tex_index = texture(tex, uv).r;
-    //vec4 texcolor = get_shifted_color(tex_index);
-    //
-    //COLOR = (outline * vec4(outline_color, 1.0) + (1.0 - outline) * texcolor) * inside;
-//}
 
 void fragment() {
 	vec2 frag = FRAGCOORD.xy;
-	frag.x += ((random(bucket(frag.y - center.y + radius))) - 0.5) * fuzz;
+	vec2 texFrag = FRAGCOORD.xy;
+	
+	//texFrag -= center;
+	
+	frag.x += random(vec2(frag.y - center.y + fuzz)) * fuzz;
+	
 	float len = length(frag - center);
 	float inside = step(len, radius);
 	float outline = 0.0;
@@ -81,7 +49,7 @@ void fragment() {
 		len = length((frag - vec2(1.0, 0.0)) - center);
 		outline = outline + (1.0 - step(len, radius));
 	}
-	vec2 uv = ((frag - center) / vec2(textureSize(tex, 0)));
+	vec2 uv = ((texFrag - center) / vec2(textureSize(tex, 0)));
 	float tex_index = texture(tex, uv).r;
 	vec4 texcolor = get_shifted_color(tex_index);
 	COLOR = (outline * vec4(outline_color, 1.0) + (1.0 - outline) * texcolor) * inside;

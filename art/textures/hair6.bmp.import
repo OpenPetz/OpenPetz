@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://sdlfpiu12mn1"
-path="res://.godot/imported/hair11.bmp-b9899d9b8b7c5c0654994f7558962628.ctex"
+uid="uid://fiq7asbypmt6"
+path="res://.godot/imported/hair6.bmp-1b927a225af4f44f08da0145da3af7f2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://pet/data/textures/hair11.bmp"
-dest_files=["res://.godot/imported/hair11.bmp-b9899d9b8b7c5c0654994f7558962628.ctex"]
+source_file="res://art/textures/hair6.bmp"
+dest_files=["res://.godot/imported/hair6.bmp-1b927a225af4f44f08da0145da3af7f2.ctex"]
 
 [params]
 
@@ -23,7 +23,7 @@ compress/normal_map=0
 compress/channel_pack=0
 mipmaps/generate=false
 mipmaps/limit=-1
-roughness/mode=0
+roughness/mode=1
 roughness/src_normal=""
 process/fix_alpha_border=true
 process/premult_alpha=false
@@ -31,4 +31,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=1
+detect_3d/compress_to=0

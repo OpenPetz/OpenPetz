@@ -1,8 +1,8 @@
 [gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://bldwk1rol2586"]
 
 [ext_resource type="Shader" path="res://shaders/ball_shader.gdshader" id="1_kflw4"]
-[ext_resource type="Texture2D" uid="uid://dk28kx0mu1y8d" path="res://pet/data/textures/petzpalette.png" id="2_6uxrn"]
-[ext_resource type="Texture2D" uid="uid://dfy8bwfuekmgx" path="res://pet/data/textures/hair10.bmp" id="3_c5jat"]
+[ext_resource type="Texture2D" uid="uid://dk28kx0mu1y8d" path="res://src/pet/data/textures/petzpalette.png" id="2_6uxrn"]
+[ext_resource type="Texture2D" uid="uid://dfy8bwfuekmgx" path="res://src/pet/data/textures/hair10.bmp" id="3_c5jat"]
 
 [resource]
 shader = ExtResource("1_kflw4")
