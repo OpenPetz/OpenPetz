@@ -97,7 +97,7 @@ public class BMP {
 	public Texture2D GetPalette() {
 		if (_loaded && _bitCount == 8){
 			
-			var textureImg = ImageTexture.CreateFromImage(_raster);
+			var textureImg = ImageTexture.CreateFromImage(_palette);
 			Texture2D texture = textureImg as Texture2D;
 			
 			return texture;
