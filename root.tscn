@@ -1,14 +1,18 @@
-[gd_scene load_steps=3 format=3 uid="uid://cvo4txnbhwx5b"]
+[gd_scene load_steps=4 format=3 uid="uid://cvo4txnbhwx5b"]
 
 [ext_resource type="Texture2D" uid="uid://bpve6ay1yj7iw" path="res://icon.svg" id="1_3viuq"]
+[ext_resource type="Script" path="res://src/PlayScene/PlayScene.cs" id="1_5mrsk"]
 [ext_resource type="Script" path="res://src/pet/Pet.cs" id="1_uahtr"]
 
 [node name="Root" type="Node"]
 
-[node name="Pet" type="Node2D" parent="."]
-position = Vector2(741, 424)
+[node name="Node2D" type="Node2D" parent="."]
+script = ExtResource("1_5mrsk")
+
+[node name="Pet" type="Node2D" parent="Node2D"]
+position = Vector2(525, 521)
 script = ExtResource("1_uahtr")
 
-[node name="Icon" type="Sprite2D" parent="Pet"]
+[node name="Icon" type="Sprite2D" parent="Node2D/Pet"]
 visible = false
 texture = ExtResource("1_3viuq")

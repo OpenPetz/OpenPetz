@@ -16,6 +16,11 @@ config/features=PackedStringArray("4.3", "C#", "GL Compatibility")
 run/max_fps=20
 config/icon="res://icon.svg"
 
+[display]
+
+window/size/viewport_width=1024
+window/size/viewport_height=768
+
 [dotnet]
 
 project/assembly_name="OpenPetz"
