@@ -18,6 +18,7 @@ public partial class Sprite3D : Node2D //3d inheriting 2d? oh well
 	public List<Line> LinezList {get; protected set;} = new List<Line> ();
 	
 	protected TextureAtlas textureAtlas = null;
+	protected Vector3 AbsScale;
 
 	public Sprite3D(){}
 }

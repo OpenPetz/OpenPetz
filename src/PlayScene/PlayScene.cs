@@ -13,7 +13,8 @@ public partial class PlayScene : Node2D
 	
 	public override void _Ready()
 	{
-		string bgPath = "./Resource/Area/Arabia/arabia.png";
+		//string bgPath = "./Resource/Area/Arabia/arabia.png";
+		string bgPath = "./Resource/Wallpaper/Orange Catz.BMP";
 		
 		Image img = Image.LoadFromFile(bgPath);
 		Background = ImageTexture.CreateFromImage(img);
@@ -41,7 +42,7 @@ public partial class PlayScene : Node2D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-
+		
 	}
 
 }

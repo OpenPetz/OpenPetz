@@ -16,25 +16,22 @@ public partial class PetSprite : Sprite3D
 	public PetSprite (Pet _p){
 		parent = _p;
 		
-		List<TextureParams> textureList = new List<TextureParams>();
+		/*List<TextureParams> textureList = new List<TextureParams>();
 		textureList.Add(new TextureParams {
-			Path = "./art/textures/trianglespink.bmp"
+			Path = "./art/textures/hair10.bmp",
+			Transparency = 1
 		});
 		textureList.Add(new TextureParams {
-			Path = "./art/textures/bee2.bmp"
+			Path = "./art/textures/hair4.bmp",
+			Transparency = 1
 		});
 		textureList.Add(new TextureParams {
-			Path = "./art/textures/wizard.bmp"
-		});
-		textureList.Add(new TextureParams {
-			Path = "./art/textures/bubblesb.bmp"
-		});
-		textureList.Add(new TextureParams {
-			Path = "./art/textures/quiltblue.bmp"
-		});
+			Path = "./art/textures/hair10.bmp",
+			Transparency = 1
+		});*/
 		
-		Texture2D palette = PaletteManager.FetchPalette("catz");
-		textureAtlas = new TextureAtlas(palette, Guid.Empty, textureList);
+		Texture2D palette = PaletteManager.FetchPalette("petz");
+		textureAtlas = new TextureAtlas(palette, Guid.Empty, parent.LinezDatabase.TextureList);
 
 		AddChild(textureAtlas);
 		
@@ -75,23 +72,21 @@ public partial class PetSprite : Sprite3D
 	}
 	
 	private void SetupSprite()
-	{
-		//shamelessly stolen from Catz 1 :)
-		//int[] colors = {102,102,82,102,102,102,72,42,82,72,82,112,82,72,15,15,72,72,72,112,112,112,82,72,82,82,82,112,112,102,82,102,102,72,72,102,102,112,82,102,42,82,82,112,72,82,112,82,42,112,112,112,42,42,42,118,118,0,0,0,0,0,0,72,112,9,9};
-		int[] colors = {32,32,72,72,72,72,72,32,72,32,72,32,72,72,15,15,32,32,32,32,32,32,32,32,72,72,72,0,0,72,32,32,72,72,32,32,72,0,72,72,72,32,32,72,72,72,72,28,34,32,32,32,32,32,32,18,118,0,0,0,0,0,0,32,32,7,7};
-		
-		GD.Print(colors.Length);
-		
+	{	
+		var scales = parent.LinezDatabase.DefaultScales;
+	
+		float scalesUnit = (float)(150 + scales[0]) / 512f;
+		AbsScale = new Vector3(scalesUnit,scalesUnit,scalesUnit);
 		
 		for (int i = 0; i < 67; i++)
 		{
-			int color = colors[i];
-			int pcolor = 110;
-			int tex = -1;
+			var ballInfo = parent.LinezDatabase.BallzInfo[i];
 			
 			Ball dummyBall;
 			
-			var diameter = parent.catBhd.GetDefaultBallSize(i) / 2;
+			var diameter = parent.catBhd.GetDefaultBallSize(i) + ballInfo.SizeDifference;
+			
+			diameter = (int)((float)diameter * (float)(150 + scales[1]) / 512f);
 			
 			if (i == 27 || i == 28)
 				diameter = 0;
@@ -100,20 +95,20 @@ public partial class PetSprite : Sprite3D
 			{
 				dummyBall = new EyeBall(textureAtlas, new BallParams {
 					Diameter = diameter,// / 2,
-					ColorIndex = color,
-					Fuzz = 4,
-					OutlineType = 1,
-					OutlineColor = 0,
-					TextureIndex = tex
+					ColorIndex = ballInfo.Color,
+					Fuzz = ballInfo.Fuzz,
+					OutlineType = ballInfo.OutlineType,
+					OutlineColor = ballInfo.OutlineColor,
+					TextureIndex = ballInfo.Texture
 				});
 			} else {
 				dummyBall = new Ball(textureAtlas, new BallParams {
 					Diameter = diameter,// / 2,
-					ColorIndex = color,
-					Fuzz = 4,
-					OutlineType = 1,
-					OutlineColor = 0,
-					TextureIndex = tex
+					ColorIndex = ballInfo.Color,
+					Fuzz = ballInfo.Fuzz,
+					OutlineType = ballInfo.OutlineType,
+					OutlineColor = ballInfo.OutlineColor,
+					TextureIndex = ballInfo.Texture
 				});
 			}
 
@@ -171,8 +166,8 @@ public partial class PetSprite : Sprite3D
 			var dummyLine = new Line(this, textureAtlas, new LineParams {
 				Start = BallzList[membs.X],
 				End = BallzList[membs.Y],
-				LeftColor = 0,
-				RightColor = 0
+				LeftColor = 39,
+				RightColor = 39
 			});
 			
 			/*LinezList.Add(dummyLine);
@@ -200,13 +195,16 @@ public partial class PetSprite : Sprite3D
 			return;
 		
 		var frame = currentFrame;
+		
+		var scales = parent.LinezDatabase.DefaultScales;
+		float scalesUnit = (float)(150 + scales[0]) / 512f;
 	
 		for (int index = 0; index < BallzList.Count; index++)
 		{
 
 			var orien = frame.BallOrientation(index);
 			
-			var rotMat = Rotator.Rotate3D(orien.Position / new Vector3(2f, 2f, 2f), Rotation3D);
+			var rotMat = Rotator.Rotate3D(orien.Position * AbsScale, Rotation3D);
 
 			Vector2 v = new Vector2(rotMat.X, rotMat.Y)/* */;
 

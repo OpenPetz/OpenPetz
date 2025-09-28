@@ -1,11 +1,10 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 
 using OpenPetz;
 
-public partial class Pet : Node2D
+public partial class Pet : LinezObject
 {
 	private PetSprite petSprite;
 
@@ -14,9 +13,7 @@ public partial class Pet : Node2D
 	private BallzModel.FrameGroup animation;
 	private int currentFrame = 0;
 	
-	public List<Fudger.Base> Fudgers = new List<Fudger.Base>();
-	
-	public Vector3 Rotation3D = new Vector3(0.0f, 0.0f, 0.0f);
+	//public Vector3 Rotation3D = new Vector3(-0.125f, 0.0f, 0.0f);
 	
 	public Pet()
 	{
@@ -24,17 +21,13 @@ public partial class Pet : Node2D
 	}
 
 	public override void _Ready()
-	{
-		Rotation3D.X -= 0.125f;
+	{	
+		Fudgers.Add(new Fudger(Fudger.EDirectiveType.Decay));
 		
-		Fudgers.Add(Fudger.Method.InitFudger(Fudger.DirectiveType.Aim));
-		
-		Rotation3D.Y = Fudgers[(int)Fudger.Type.Rotation].GetCurrentAngle();
-		
-		World.pets.Add(this);
+		//Rotation3D.Y = 1.57f/2f;
 		
 		catBhd = AnimationManager.FetchCatBhd();
-		animation = catBhd.GetAnimation(0); //104
+		animation = catBhd.GetAnimation(10); //104
 		
 		var frame = animation.Frames[currentFrame];
 
@@ -43,6 +36,8 @@ public partial class Pet : Node2D
 		AddChild(petSprite);
 		
 		petSprite.SetFrame(frame);
+		
+		World.pets.Add(this);
 	}
 
 	public override void _ExitTree()
@@ -56,16 +51,16 @@ public partial class Pet : Node2D
 		foreach (var fudger in Fudgers)
 			fudger.Update();
 		
-		var fudger2 = Fudgers[(int)Fudger.Type.Rotation] as Fudger.Aim;
+		//var fudger2 = Fudgers[(int)Fudger.EType.Rotation];
 		
 		//What?
-		var cursor = GetViewport().GetMousePosition();
+		//var cursor = GetViewport().GetMousePosition();
 		//WHAT?
-		var angle = (int)(Math.Atan2((double)(GlobalPosition.X - cursor.X), 128d) * 32768d / Math.PI);
+		//var angle = (int)(Math.Atan2((double)(GlobalPosition.X - cursor.X), 128d) * 128d / Math.PI);
 		
-		fudger2.SetAimTarget(angle);
+		//fudger2.SetAimTarget(angle);
 		
-		Rotation3D.Y = Fudgers[(int)Fudger.Type.Rotation].GetCurrentAngle();
+		//Rotation3D.Y = 1.57f;
 		
 		currentFrame += 1;
 		if (currentFrame >= animation.NumFrames)
@@ -78,10 +73,4 @@ public partial class Pet : Node2D
 		
 		//petSprite.PointHeadAt(GetViewport().GetMousePosition());
 	}
-
-	public override void _Draw()
-	{
-
-	}
-
 }

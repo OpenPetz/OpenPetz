@@ -58,6 +58,8 @@ public partial class Line : Geometry
 		ShaderMaterial.SetShaderParameter("ball_diameters", diameters);
 		ShaderMaterial.SetShaderParameter("angle_to", Info.Start.Position.AngleToPoint(Info.End.Position));
 		
+		ShaderMaterial.SetShaderParameter("color_index", Info.Start.Info.ColorIndex);
+		
 		ShaderMaterial.SetShaderParameter("left_color", (float)Info.LeftColor);
 		ShaderMaterial.SetShaderParameter("right_color", (float)Info.RightColor);
 		
@@ -93,10 +95,14 @@ public partial class Line : Geometry
    			ShaderMaterial.SetShaderParameter(StringManager.S("atlas_position"), atlasCoords.Position);
       		ShaderMaterial.SetShaderParameter(StringManager.S("atlas_size"), atlasCoords.Size);
 			ShaderMaterial.SetShaderParameter(StringManager.S("tex"), Atlas.TextureData);
+			
+			ShaderMaterial.SetShaderParameter(StringManager.S("transparency"), atlasCoords.Transparency);
 		} else {
      		ShaderMaterial.SetShaderParameter(StringManager.S("atlas_position"), new Vector2(0.0f, 0.0f));
       		ShaderMaterial.SetShaderParameter(StringManager.S("atlas_size"), new Vector2(1.0f, 1.0f));
 			ShaderMaterial.SetShaderParameter(StringManager.S("tex"), TextureManager.FetchEmptyTexture());
+			
+			ShaderMaterial.SetShaderParameter(StringManager.S("transparency"), 0);
 		}
 	}
 }

@@ -45,19 +45,19 @@ void fragment() {
 	
 	vec4 outline = vec4(circle(coord, radius));
 	
-	outline *= vec4(texture(palette, vec2(164. / 255., 0.0)).bgr, 1.0);
+	outline *= vec4(texture(palette, vec2(39. / 255., 0.0)).bgr, 1.0);
 	
 	vec4 ball = vec4(circle(coord, radius - 1.));
 	
 	float is_ball = ball.a * (coord.y + radius / 2. < 0. ? 0. : 1.);
 	
-	ball *= vec4(texture(palette, vec2(172. / 255., 0.0)).bgr, 1.0);
+	ball *= vec4(texture(palette, vec2(200. / 255., 0.0)).bgr, 1.0);
 	
 	vec4 color = mix(outline, ball, is_ball);
 	
 	vec4 iris = vec4(circle(coord + iris_coord.xy, radius / 2.));
 	
-	iris.rgb *= texture(palette, vec2(164. / 255., 0.0)).bgr;
+	iris.rgb *= texture(palette, vec2(39. / 255., 0.0)).bgr;
 	
 	iris.a *= outline.a;
 	
