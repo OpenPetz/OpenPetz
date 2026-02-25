@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace OpenPetz.Linez {
     public class Database {
         public List<Entries.BallInfo> BallzInfo {get; private set;} = new List<Entries.BallInfo>();
-		public int[] DefaultScales {get; private set;} = {110, 115};
+		public int[] DefaultScales {get; private set;} = {150, 155};
 		public List<Entries.Texture> TextureList {get; private set;} = new List<Entries.Texture>();
         
 		public void Parse(string _lnz) // place holder: implement actual parser later

@@ -1,5 +1,9 @@
 using Godot;
 using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 public class Bmp {
 
@@ -18,19 +22,25 @@ public class Bmp {
         All = 3,
     }
     
+	public void LoadFile(string _path, LoadType _type) 
+    {
+		using var file = File.Open(_path, FileMode.Open);
+		LoadFileStream(file, _type);
+	}
     
-    public void LoadFile(string _path, LoadType _type) 
+    public void LoadFileStream(Stream _stream, LoadType _type) 
     {
         
         try {
-            using var file = FileAccess.Open(_path, FileAccess.ModeFlags.Read);
+            
+			using var file = new BinaryReader(_stream, Encoding.UTF8);
             
             int junk = 0;
             //Ignore first 14 bytes
             for (junk = 0; junk < 7; junk++)
-                file.Get16();
+                file.ReadInt16();
             
-            uint headerSize = file.Get32();
+            uint headerSize = file.ReadUInt32();
             
             if (headerSize != 40)
             {
@@ -41,8 +51,8 @@ public class Bmp {
             //Read width and height;
             if (_type.HasFlag(LoadType.Raster))
             {
-                Width = file.Get32();
-                Height = file.Get32();
+                Width = file.ReadUInt32();
+                Height = file.ReadUInt32();
             
                 //Between 1 and 512 (inclusive) only
                 
@@ -58,21 +68,21 @@ public class Bmp {
                     return;
                 }
             } else {
-                file.Get64();
+                file.ReadInt64();
             }
             
             //Ignore these two bytes too
-            file.Get16();
+            file.ReadInt16();
             
-            BitCount = file.Get16();
+            BitCount = file.ReadUInt16();
             
             if (BitCount != 8 && BitCount != 24)
             {
-                PrintError("Invalid Bit Count (" + BitCount + ") for file " + _path);
+                PrintError("Invalid Bit Count (" + BitCount + ")");
                 return;
             }
             
-            uint compression = file.Get32();
+            uint compression = file.ReadUInt32();
             
             if (compression != 0)
             {
@@ -82,19 +92,19 @@ public class Bmp {
                 
             //Ignore 20 more bytes
             for (junk = 0; junk < 5; junk++)
-                file.Get32();
+                file.ReadInt32();
             
             //if 8 bit, then there must be the index palette, in BGR0 format 
             if (BitCount == 8){
                 
                 if (_type.HasFlag(LoadType.Palette))
                 {
-                    byte[] pal = file.GetBuffer(1024);
+                    byte[] pal = file.ReadBytes(1024);
                     //generate the palette
                     Palette = Image.CreateFromData(256, 1, false, Image.Format.Rgba8, pal);
                 } else {
                     //Bye bye those 1024 bytes 
-                    file.GetBuffer(1024);
+                    file.ReadBytes(1024);
                 }
             }
             
@@ -103,9 +113,9 @@ public class Bmp {
             if (_type.HasFlag(LoadType.Raster))
             {
             
-                    int bytesPerTexel = BitCount == 24 ? 3 : 1;
+                    uint bytesPerTexel = BitCount == 24 ? 3u : 1u;
                 
-                    byte[] raster = file.GetBuffer(Width * Height * bytesPerTexel);
+                    byte[] raster = file.ReadBytes((int)(Width * Height * bytesPerTexel));
                 
                     if (bytesPerTexel == 3)
                     {

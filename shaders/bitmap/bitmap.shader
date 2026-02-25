@@ -13,7 +13,7 @@ void fragment() {
 	
 	coord.y = 1. - coord.y;
 	
-	vec4 col = texture(tex, coord).bgra;
+	vec4 col = texture(tex, coord).rgba;
 	
 	COLOR = col;
-}
+} 

@@ -2,105 +2,67 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public struct BallParams {
-	public int Fuzz {get; set;} = 0;
-	public int Diameter {get; set;} = 1;
-	public int ColorIndex {get; set;} = 0;
-	public int OutlineType {get; set;} = 0;
-	public int OutlineColor {get; set;} = 0;
-	public int TextureIndex {get; set;} = -1;
-	public BallParams(){}
-}
-
-public partial class Ball : Geometry
+namespace OpenPetz.Graphics.Geometry 
 {
-
-	private List<PaintBallGroup> paintBallGroups = null;
-
-	//public TextureAtlas atlas {get; private set;} = null;
-	
-	public BallParams Info {get; protected set;} = new BallParams();
-	
-	public Vector3 rotation = new Vector3(0.0f, 0.0f, 0.0f);
-
-	private SubTextureCoordinations atlasCoords = new SubTextureCoordinations(0.0f, 0.0f, 1.0f, 1.0f); 
-
-	public Ball()
+	public class Ball 
 	{
-
-	}
-
-	//public Ball(TextureAtlas _atlas, Texture2D texture, Texture2D palette, int diameter, int color_index, int fuzz, int outline_width, int outline_color)
-	public Ball(TextureAtlas _atlas, BallParams _params)
-	{
-		Info = _params;
-
-		Atlas = _atlas;
-		
-		Mesh = MeshManager.FetchDefaultMesh();
-
-		ShaderMaterial = ShaderManager.FetchShaderMaterial("ball");
-		
-		Material = this.ShaderMaterial;
-	}
-
-	public override void _Ready()
-	{
-		//Set Material uniform parameters
-
-		ShaderMaterial.SetShaderParameter(StringManager.S("fuzz"), Info.Fuzz);
-		ShaderMaterial.SetShaderParameter(StringManager.S("diameter"), Info.Diameter);
-		ShaderMaterial.SetShaderParameter(StringManager.S("outline_width"), Info.OutlineType);
-
-		ShaderMaterial.SetShaderParameter(StringManager.S("outline_color"), (float)Info.OutlineColor);
-		
-		ShaderMaterial.SetShaderParameter(StringManager.S("tex"), TextureManager.FetchEmptyTexture());
-		ShaderMaterial.SetShaderParameter(StringManager.S("color_index"), Info.ColorIndex);
-		ShaderMaterial.SetShaderParameter(StringManager.S("palette"), Atlas.Palette);
-
-		ShaderMaterial.SetShaderParameter(StringManager.S("center"), this.GlobalPosition);
-
-		
-		SetTextureAtlas();
-	}
-
-
-	public override void _Process(double dt)
-	{
-		ShaderMaterial.SetShaderParameter(StringManager.S("center"), this.GlobalPosition);
-	}
-	
-	// CUSTOM METHODS
-	
-	public void AddPaintBalls(List<PaintBall> _paintBalls)
-	{
-		if (paintBallGroups == null)
-			paintBallGroups = new List<PaintBallGroup>();
-		
-		var pbg = new PaintBallGroup(Atlas, this, _paintBalls);
-		paintBallGroups.Add(pbg);
-		AddChild(pbg);
-	}
-	
-	public override void SetTextureAtlas()
-	{
-		//atlas = _atlas;
-		
-		if (Atlas.TextureData != null)
+		public struct Params 
 		{
-			atlasCoords = Atlas.GetSubTextureCoords(Info.TextureIndex, Info.ColorIndex);
+			public int ColorAndOutlineColor {get; private set;} = 0;
+			
+			public int Fuzz {get; set;} = 0;
+			public int Diameter {get; set;} = 1;
+			public int OutlineType {get; set;} = 0;
+			public int TextureIndex {get; set;} = -1;
+			
+			public int ColorIndex {
+				get { return ColorAndOutlineColor & (int)0x000000ff; } //256
+				set { ColorAndOutlineColor = (ColorAndOutlineColor & (int)0x7fffff00) + (value & (int)0xff); }
+			}
+			public int OutlineColor {
+				get { return (ColorAndOutlineColor & (int)0x0000ff00) >> 8; }
+				set { ColorAndOutlineColor = (ColorAndOutlineColor & (int)0x7fff00ff) + ((value & 0xff) << 8); }
+			}
+			
+			public Params(){}
+		}
+		
+		private List<PaintBallGroup> paintBallGroups = null;
 
-   			ShaderMaterial.SetShaderParameter(StringManager.S("atlas_position"), atlasCoords.Position);
-      		ShaderMaterial.SetShaderParameter(StringManager.S("atlas_size"), atlasCoords.Size);
-			ShaderMaterial.SetShaderParameter(StringManager.S("tex"), Atlas.TextureData);
+		//public TextureAtlas atlas {get; private set;} = null;
+		
+		public Params Info {get; protected set;} = new Params();
+		
+		public Vector3 Rotation = new Vector3(0.0f, 0.0f, 0.0f);
+		public Vector3 Position = new Vector3(0.0f, 0.0f, 0.0f);
+
+		public TextureAtlas textureAtlas {get; private set;} = null;
+		private SubTextureCoordinations atlasCoords = new SubTextureCoordinations(0.0f, 0.0f, 1.0f, 1.0f); 
+		
+		public Ball(TextureAtlas _atlas, Params _params)
+		{
+			Info = _params;
 			
-			ShaderMaterial.SetShaderParameter(StringManager.S("transparency"), atlasCoords.Transparency);
-		} else {
-     		ShaderMaterial.SetShaderParameter(StringManager.S("atlas_position"), new Vector2(0.0f, 0.0f));
-      		ShaderMaterial.SetShaderParameter(StringManager.S("atlas_size"), new Vector2(1.0f, 1.0f));
-			ShaderMaterial.SetShaderParameter(StringManager.S("tex"), TextureManager.FetchEmptyTexture());
+			textureAtlas = _atlas;
 			
-			ShaderMaterial.SetShaderParameter(StringManager.S("transparency"), 0);
+			if (textureAtlas.TextureData != null)
+			{
+				atlasCoords = textureAtlas.GetSubTextureCoords(Info.TextureIndex, Info.ColorIndex);
+			}
+		}
+		
+		public void PassData(SoA.Buffer _buffer, int _index)
+		{
+			_buffer.ColorAndOutlineColor[_index] = Info.ColorAndOutlineColor;
+			_buffer.Diameter[_index] = Info.Diameter;
+			_buffer.Position[_index] = new Vector2(Position.X, Position.Y);
+			_buffer.AtlasPosition[_index] = atlasCoords.Position;
+			_buffer.AtlasSize[_index] = atlasCoords.Size;
+		}
+		
+		public void PassDataOnce(SoA.Buffer _buffer, int _index)
+		{
+			PassData(_buffer, _index);
 		}
 	}
 }

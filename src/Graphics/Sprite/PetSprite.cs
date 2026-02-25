@@ -16,20 +16,6 @@ public partial class PetSprite : Sprite3D
 	public PetSprite (Pet _p){
 		parent = _p;
 		
-		/*List<TextureParams> textureList = new List<TextureParams>();
-		textureList.Add(new TextureParams {
-			Path = "./art/textures/hair10.bmp",
-			Transparency = 1
-		});
-		textureList.Add(new TextureParams {
-			Path = "./art/textures/hair4.bmp",
-			Transparency = 1
-		});
-		textureList.Add(new TextureParams {
-			Path = "./art/textures/hair10.bmp",
-			Transparency = 1
-		});*/
-		
 		Texture2D palette = PaletteManager.FetchPalette("petz");
 		textureAtlas = new TextureAtlas(palette, Guid.Empty, parent.LinezDatabase.TextureList);
 
@@ -188,7 +174,6 @@ public partial class PetSprite : Sprite3D
 		UpdateLinez();
 	}
 	
-	//To Do: implement the rotation vector math for x rotation
 	private void UpdateMainBallz()
 	{
 		if (currentFrame == null)
